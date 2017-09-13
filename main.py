@@ -7,12 +7,12 @@ import random
 import numpy as np
 
 n_batch = 100
-n_step = 200
+n_step = 2000
 n_input = 1
 n_output = 10
 n_cell = 100
 lr = 0.006
-n_train = 1
+n_train = 20000
 
 bear = Bear()
 data, target = bear.data, bear.target
@@ -21,10 +21,10 @@ target = lb.fit_transform(target)
 # print(target, ...)
 # print(lb.inverse_transform(target))
 X_train, X_test, y_train, y_test = train_test_split(
-    data, target, test_size=0.3333)
-# scaler = StandardScaler()
-# X_train = scaler.fit_transform(X_train)
-# X_test = scaler.transform(X_test)
+    data, target, test_size=0.333)
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
 total_train_batch, total_test_batch = X_train.shape[0], X_test.shape[0]
 print(total_train_batch, ...)
 print(X_train.shape, y_test.shape, ...)
@@ -36,8 +36,11 @@ with tf.Session() as sess:
         term = random.sample(range(total_train_batch), n_batch)
         sess.run(lstm.train_op, {lstm.x: X_train[term][
                  :, :, np.newaxis], lstm.y: y_train[term]})
-    acc = np.ones((int(total_test_batch / n_batch),n_batch))
-    for j in range(int(total_test_batch / n_batch)):
-        acc[j]=(sess.run(lstm.acc, {lstm.x: X_test[j*n_batch: (j + 1) * n_batch][
-            :, :, np.newaxis], lstm.y: y_test[j*n_batch: (j + 1) * n_batch]}))
-    print(acc.mean(), ...)
+        if i % 200 == 0:
+            acc = np.ones((int(total_test_batch / n_batch), n_batch))
+            for j in range(int(total_test_batch / n_batch)):
+                acc[j] = (sess.run(lstm.acc,
+                                   {lstm.x: X_test[j * n_batch: (j + 1) * n_batch][
+                                       :, :, np.newaxis],
+                                    lstm.y: y_test[j * n_batch: (j + 1) * n_batch]}))
+            print(i,acc.mean(), ...)

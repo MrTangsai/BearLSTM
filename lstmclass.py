@@ -28,7 +28,7 @@ class LSTM(object):
             layer_input, [-1, self.step, self.cellnum])
 
     def add_lstm_layer(self):
-        self.cell = tf.contrib.rnn.LayerNormBasicLSTMCell(self.cellnum)
+        self.cell = tf.contrib.rnn.BasicLSTMCell(self.cellnum)
         self.init_state = self.cell.zero_state(self.batch, dtype=tf.float32)
         self.output, self.state = tf.nn.dynamic_rnn(
             self.cell, self.layer_input, initial_state=self.init_state, time_major=False)
@@ -45,4 +45,3 @@ class LSTM(object):
 
     def evaluate(self):
     	self.acc = tf.cast(tf.equal(tf.argmax(self.y, 1), tf.argmax(self.layer_output, 1)), tf.float32)
-    	

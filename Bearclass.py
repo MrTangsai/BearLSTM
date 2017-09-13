@@ -3,8 +3,8 @@ import numpy as np
 import os
 import re
 
-n_point = 200
-n_num = 2400
+n_point = 2000
+n_num = 240
 
 
 class Bear(object):
@@ -45,6 +45,16 @@ class Bear(object):
         for _ in range(n_num - 1):
             target = np.hstack((target, val))
         return target.flatten()
+
+    def savedata(self):
+        scio.savemat('data.mat', {'data': self.data})
+
+
+def group(x, y):
+    sort = np.argsort(y.argmax(axis=1))
+    y_g = y[sort]
+    x_g = x[sort]
+    return x_g, y_g
 
 if __name__ == '__main__':
     bear = Bear()
